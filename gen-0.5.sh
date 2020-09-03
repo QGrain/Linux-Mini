@@ -34,6 +34,11 @@ generate_050() {
     echo -e "\troot (hd0,0)" >> $grub_path
     echo -e "\tkernel /vmlinuz-2.6.32-431.el6.x86_64 ro root=UUID=$UUID" >> $grub_path
     echo -e "\tinitrd /$imgname" >> $grub_path
+
+    if [[ -f /boot/grub/grub0.5.conf ]]
+    then
+        rm -f /boot/grub/grub0.5.conf
+    fi
     cp $grub_path /boot/grub/grub0.5.conf
 
     echo -e "\nSuccessfully generate /boot/grub/grub.conf, now you can reboot to enjoy it:)"
