@@ -29,7 +29,7 @@ cp_lib() {
 }
 
 
-create_dir $path/bin $path/sbin $path/usr/bin $path/usr/sbin $path/lib64
+create_dir $path/bin $path/sbin $path/usr/bin $path/usr/sbin $path/lib64 $path/usr/lib64
 
 
 echo -e "copy ld-linux-x86_64.so.2"
