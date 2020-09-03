@@ -10,26 +10,42 @@ prepare_055() {
     check_delete $target_path
     create_dir $target_path
     cd $target_path
-    create_dir dev proc etc lib/modules sys root var/log var/run
+    create_dir dev proc etc lib/modules/kernel sys root var/log var/run
 
     # copy /lib/modules
-    cp /lib/modules/2.6.32-431*/modules.* lib/modules/
-    cp -r /lib/modules/2.6.32-431*/kernel lib/modules/
+    lib_list="scsi_transport_spi mptbase mptscsih mptspi cdrom sr_mod crc_t10dif sd_mod jbd2 mbcache ext4"
+    for lib_mod in $lib_list
+    do
+        mod_path=`modinfo $lib_mod | awk '{print $2}' | sed -n '1,1p'`
+        check_copy $mod_path $target_path/lib/modules/kernel
+    done
+    cp /lib/modules/2.6.32-431.el6.x86_64/modules.* $target_path/lib/modules/2.6.32-431.el6.x86_64/
 
     echo '#!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:$PATH
 export PS1="[\s-\v] \w \$ "
-modprobe ext4
-modprobe sd_mod
-modprobe sr_mod
 
-mount -t proc proc /proc
-mount -t sysfs sysfs /sys
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/drivers/scsi/scsi_transport_spi.ko
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/drivers/message/fusion/mptbase.ko
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/drivers/message/fusion/mptscsih.ko
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/drivers/message/fusion/mptspi.ko
 
-mknod -m 0666 /dev/sda b 8 0
-mknod -m 0666 /dev/sda1 b 8 1
-mknod -m 0666 /dev/sda2 b 8 2
-mknod -m 0666 /dev/sda3 b 8 3
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/drivers/cdrom/cdrom.ko
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/drivers/scsi/sr_mod.ko
+
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/lib/crc-t10dif.ko
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/drivers/scsi/sd_mod.ko
+
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/fs/mbcache.ko
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/fs/jbd2/jbd2.ko
+insmod /lib/modules/2.6.32-431.el6.x86_64/kernel/fs/ext4/ext4.ko
+
+mknod /dev/null c 1 3
+mknod /dev/console c 5 1
+mount -t proc proc /proc > /dev/null 2>&1
+mount -t sysfs sysfs /sys > /dev/null 2>&1
+
+mknod /dev/sda2 b 8 2
 
 mount -t ext4 /dev/sda2 /root
 /bin/bash' > $target_path/init
@@ -52,6 +68,11 @@ generate_055() {
     echo -e "\troot (hd0,0)" >> $grub_path
     echo -e "\tkernel /vmlinuz-2.6.32-431.el6.x86_64 ro root=UUID=$UUID" >> $grub_path
     echo -e "\tinitrd /$imgname" >> $grub_path
+
+    if [[ -f /boot/grub/grub0.55.conf ]]
+    then
+        rm -f /boot/grub/grub0.55.conf
+    fi
     cp $grub_path /boot/grub/grub0.55.conf
     
     echo -e "\nSuccessfully generate /boot/grub/grub.conf, now you can reboot to enjoy it:)"
