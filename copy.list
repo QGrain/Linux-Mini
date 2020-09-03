@@ -59,9 +59,12 @@ fsck.ext4dev
 fsck.xfs
 start
 telinit
+runlevel
 plymouth
 basename
 swapon
 id
 fstab-decode
 fgrep
+route
+strace
