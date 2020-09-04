@@ -62,8 +62,11 @@ generate_055() {
     grub_path=/boot/grub/grub.conf
     imgname=$(echo $target_path | sed -e 's/\/[^ ]*\///g').img
 
-    rm -f $grub_path
-    cp /boot/grub/grub.conf.bak $grub_path
+    if [[ ! f /boot/grub/grub.conf.bak ]]
+    then
+        /bin/cp -f $grub_path /boot/grub/grub.conf.bak
+    fi
+    /bin/cp -f /boot/grub/grub.conf.bak $grub_path
     echo -e "title CentOS (0.55 with disk mounted) [auto-gen]" >> $grub_path
     echo -e "\troot (hd0,0)" >> $grub_path
     echo -e "\tkernel /vmlinuz-2.6.32-431.el6.x86_64 ro root=UUID=$UUID" >> $grub_path
@@ -75,7 +78,9 @@ generate_055() {
     fi
     cp $grub_path /boot/grub/grub0.55.conf
     
-    echo -e "\nSuccessfully generate /boot/grub/grub.conf, now you can reboot to enjoy it:)"
+    echo -e "\n================================================================\n"
+    echo -e "Successfully generate /boot/grub/grub.conf, now you can reboot to enjoy it:)"
+    echo -e "\n================================================================\n"
 }
 
 prepare_055
