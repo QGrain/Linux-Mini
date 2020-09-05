@@ -28,7 +28,7 @@ generate_050() {
     grub_path=/boot/grub/grub.conf
     imgname=$(echo $target_path | sed -e 's/\/[^ ]*\///g').img
 
-    if [[ ! f /boot/grub/grub.conf.bak ]]
+    if [[ ! -f /boot/grub/grub.conf.bak ]]
     then
         /bin/cp -f $grub_path /boot/grub/grub.conf.bak
     fi
@@ -44,9 +44,9 @@ generate_050() {
     fi
     cp $grub_path /boot/grub/grub0.5.conf
 
-    echo -e "\n================================================================\n"
+    echo -e "\n============================================================================\n"
     echo -e "Successfully generate /boot/grub/grub.conf, now you can reboot to enjoy it:)"
-    echo -e "\n================================================================\n"
+    echo -e "\n============================================================================\n"
 }
 
 prepare_050
