@@ -10,7 +10,7 @@ prepare_090() {
     check_delete $target_path
     create_dir $target_path
     cd $target_path
-    create_dir dev proc etc lib/modules sys root var/log var/run lib64
+    create_dir dev proc etc lib/modules sys root var/log var/run lib64 boot var/log var/lib var/empty var/lock/subsys
 
     # copy /lib/modules
     lib_list="scsi_transport_spi mptbase mptscsih mptspi cdrom sr_mod crc_t10dif sd_mod jbd2 mbcache ext4"
@@ -43,9 +43,10 @@ prepare_090() {
     cp -r /etc/init $target_path/etc/
     cp /etc/fstab /etc/mtab $target_path/etc/
     cp /etc/inittab $target_path/etc/
-    echo -e "T2:1:respawn:/sbin/mingetty /dev/tty2" >> $target_path/etc/inittab
-    echo -e "T1:134:respawn:/bin/login" >> $target_path/etc/inittab
+    # echo -e "T2:1:respawn:/sbin/mingetty /dev/tty2" >> $target_path/etc/inittab
+    # echo -e "T1:134:respawn:/bin/login" >> $target_path/etc/inittab
     ln -s /etc/rc.d/rc* $target_path/etc/
+    cp /etc/system-release $target_path/etc/
     
     echo '#!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:$PATH
@@ -55,16 +56,6 @@ mknod /dev/null c 1 3
 mount -t proc proc /proc > /dev/null 2>&1
 mount -t sysfs sysfs /sys > /dev/null 2>&1
 
-start_udev
-
-mknod /dev/sda2 b 8 2
-mount -t ext4 /dev/sda2 /root
-echo -e "/dev/sda2 has been mounted"
-# mingetty /dev/tty2 & login < /dev/tty2 &
-# mingetty /dev/tty3 & login < /dev/tty3 &
-# mingetty /dev/tty4 & login < /dev/tty4 &
-# mingetty /dev/tty5 & login < /dev/tty5 &
-# mingetty /dev/tty6 & login < /dev/tty6 &
 exec /sbin/init' > $target_path/init
 
     chmod 755 $target_path/init
@@ -79,7 +70,7 @@ generate_090() {
     grub_path=/boot/grub/grub.conf
     imgname=$(echo $target_path | sed -e 's/\/[^ ]*\///g').img
 
-    if [[ ! f /boot/grub/grub.conf.bak ]]
+    if [[ ! -f /boot/grub/grub.conf.bak ]]
     then
         /bin/cp -f $grub_path /boot/grub/grub.conf.bak
     fi
@@ -95,9 +86,9 @@ generate_090() {
     fi
     cp $grub_path /boot/grub/grub0.9.conf
     
-    echo -e "\n================================================================\n"
+    echo -e "\n============================================================================\n"
     echo -e "Successfully generate /boot/grub/grub.conf, now you can reboot to enjoy it:)"
-    echo -e "\n================================================================\n"
+    echo -e "\n============================================================================\n"
 }
 
 prepare_090
