@@ -68,3 +68,5 @@ fstab-decode
 fgrep
 route
 strace
+find
+echo
