@@ -24,6 +24,7 @@ awk
 login
 reboot
 shutdown
+halt
 fdisk
 ifconfig
 insmod
@@ -89,6 +90,8 @@ true
 unlink
 ypdomainname
 arp
+arping
+cut
 depmod
 ethtool
 ifup
@@ -119,3 +122,11 @@ whoami
 chroot
 sshd
 ping
+yum
+python
+ldd
+service
+nano
+pidof
+sort
+readlink
