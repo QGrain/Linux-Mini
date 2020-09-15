@@ -1,6 +1,7 @@
 #!/bin/sh
 cwd=`pwd`
 ld_x86_64=/lib64/ld-linux-x86-64.so.2
+freebl3=/lib64/libfreebl3.so
 source ./my-utils.sh
 
 if [[ $1 ]]
@@ -28,19 +29,19 @@ cp_lib() {
     echo "finish dependency of $1"
 }
 
+check_cp() {
+    if [[ ! -f $2 ]]
+    then
+        echo -e "cp $1 $2"
+        cp $1 $2
+    else
+        echo -e "$2 already exist"
+    fi
+}
 
 create_dir $path/bin $path/sbin $path/usr/bin $path/usr/sbin $path/lib64 $path/usr/lib64
-
-
-echo -e "copy ld-linux-x86_64.so.2"
-if [[  ! -f $path$ld_x86_64 ]]
-then
-    echo "cp $ld_x86_64 $path$ld_x86_64"
-    cp $ld_x86_64 $path$ld_x86_64
-else
-    echo "$path$ld_x86_64 already exist"
-fi
-
+check_cp $ld_x86_64 $path$ld_x86_64
+check_cp $freebl3 $path$freebl3
 
 cat $cwd/copy.list | while read one
 do
@@ -75,7 +76,6 @@ do
 done
 
 
-
 echo -e "\ncheck dependency of /lib/udev/*"
 ls $path/lib/udev | while read udevline
 do
@@ -90,9 +90,6 @@ echo -e "\ncheck the dependency of lib64/security files"
 ls $path/lib64/security | while read secline
 do
     cp_lib $path/lib64/security/$secline
-
 done
-
-#todo pam.d?
 
 echo -e "\nCopy Finished Successfully!"
