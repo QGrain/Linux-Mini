@@ -43,8 +43,6 @@ prepare_090() {
     cp -r /etc/init $target_path/etc/
     cp /etc/fstab /etc/mtab $target_path/etc/
     cp /etc/inittab $target_path/etc/
-    # echo -e "T2:1:respawn:/sbin/mingetty /dev/tty2" >> $target_path/etc/inittab
-    # echo -e "T1:134:respawn:/bin/login" >> $target_path/etc/inittab
     ln -s /etc/rc.d/rc* $target_path/etc/
     cp /etc/system-release $target_path/etc/
     
