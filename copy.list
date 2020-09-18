@@ -130,3 +130,5 @@ nano
 pidof
 sort
 readlink
+ntfs-3g
+ntfs-3g.probe
