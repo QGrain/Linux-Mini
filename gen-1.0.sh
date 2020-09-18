@@ -63,12 +63,13 @@ PermitRootLogin yes' >> $target_path/etc/ssh/sshd_config
 
     echo '#!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:$PATH
-export PS1="[\u@\h][zzy-bash] \w # "
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 
 exec /sbin/init' > $target_path/init
     chmod 755 $target_path/init
+
+    echo 'export PS1="[\u@\h][zzy-bash] (\w) # "' >> $target_path/etc/rc.d/rc.local
 }
 
 generate_100() {
